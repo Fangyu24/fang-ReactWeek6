@@ -23,9 +23,9 @@ const [formData, setFormData] = useState({
       e.preventDefault();
       const response = await axios.post(`${API_BASE}/admin/signin`, formData);
       const { token, expired } = response.data
-      // eslint-disable-next-line react-hooks/immutability
+      
       document.cookie = `hexToken=${token};expires=${new Date(expired)};`;
-      // eslint-disable-next-line react-hooks/immutability
+     
       axios.defaults.headers.common['Authorization'] = token;
 
       setIsAuth(true);
