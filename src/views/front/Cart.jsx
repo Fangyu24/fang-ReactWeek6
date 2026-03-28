@@ -8,114 +8,122 @@ const API_PATH = import.meta.env.VITE_API_PATH;
 
 const Cart = () => {
     const [cart, setCart] = useState([{ carts: [], final_total: 0 }]);
+    const [error, setError] = useState(null);
+
+    
+
 
     useEffect(() => {
         const getCart = async () => {
             try {
                 const res = await axios.get(`${API_BASE}/api/${API_PATH}/cart`)
-                // console.log(res.data.carts)
                 setCart(res.data.data)
             } catch (error) {
-                console.log(error.message)
+                setError(error.message || "取得購物車失敗");
             }
         }
         getCart()
     }, []);
 
-    const updateCart= async(cartId, productId, qty=1)=>{
+    const updateCart = async (cartId, productId, qty = 1) => {
         try {
-            const data={
-                product_id:productId,
+            const data = {
+                product_id: productId,
                 qty
             }
-            const res= await axios.put(`${API_BASE}/api/${API_PATH}/cart/${cartId}`,{data})
+            const res = await axios.put(`${API_BASE}/api/${API_PATH}/cart/${cartId}`, { data })
             console.log(res.data)
             const response = await axios.get(`${API_BASE}/api/${API_PATH}/cart`)
-                // console.log(res.data.carts)
-                setCart(response.data.data)
+            // console.log(res.data.carts)
+            setCart(response.data.data)
         } catch (error) {
-            console.log(error.message)
+            setError(error.message || "更新購物車失敗");
         }
     }
 
-    const deletCart= async(cartId)=>{
+    const deletCart = async (cartId) => {
         try {
-            const res= await axios.delete(`${API_BASE}/api/${API_PATH}/cart/${cartId}`)
+            const res = await axios.delete(`${API_BASE}/api/${API_PATH}/cart/${cartId}`)
             console.log(res.data)
             const response = await axios.get(`${API_BASE}/api/${API_PATH}/cart`)
-                // console.log(res.data.carts)
-                setCart(response.data.data)
+            // console.log(res.data.carts)
+            setCart(response.data.data)
         } catch (error) {
-            console.log(error.message)
+            setError(error.message || "刪除購物車失敗");
         }
     }
 
-    const deletAllCart= async()=>{
+    const deletAllCart = async () => {
         try {
-            const res= await axios.delete(`${API_BASE}/api/${API_PATH}/carts`)
+            const res = await axios.delete(`${API_BASE}/api/${API_PATH}/carts`)
             console.log(res.data)
             setCart({ carts: [], final_total: 0 });
-            
+
         } catch (error) {
-            console.log(error.message)
+            setError(error.message || "刪除購物車失敗");
         }
     }
 
-    return (<div className="container">
-        <h2>購物車列表</h2>
-        <div className="text-end mt-4">
-            <button type="button" className="btn btn-outline-danger"
-            onClick={()=>deletAllCart()}>
-                清空購物車
-            </button>
-        </div>
-        <table className="table">
-            <thead>
-                <tr>
-                    <th scope="col"></th>
-                    <th scope="col">品名</th>
-                    <th scope="col">數量/單位</th>
-                    <th scope="col">小計</th>
-                </tr>
-            </thead>
-            <tbody>
-                {
-                    cart?.carts?.map(cartItem => (
-                        <tr key={cartItem.id}>
-                            <td>
-                                <button type="button" className="btn btn-outline-danger btn-sm"
-                                onClick={()=>deletCart(cartItem.id)}>
-                                    刪除
-                                </button>
-                            </td>
-                            <th scope="row">
-                                {cartItem.product.title}
-                            </th>
-                            <td>
-                                <div className="input-group input-group-sm mb-3">
-                                    <input type="number" className="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm"
-                                    defaultValue={cartItem.qty}
-                                    onChange={(e)=>updateCart(cartItem.id, cartItem.product_id, Number(e.target.value))}/>
-                                    <span className="input-group-text" id="inputGroup-sizing-sm">{cartItem.product.unit}</span>
-                                </div>
-                            </td>
-                            <td className="text-end">
-                                {currency(cartItem.final_total)}
-                            </td>
+    return (
+        <>
+            {error && <p>{error}</p>}
+            <div className="container">
+                <h2>購物車列表</h2>
+                <div className="text-end mt-4">
+                    <button type="button" className="btn btn-outline-danger"
+                        onClick={() => deletAllCart()}>
+                        清空購物車
+                    </button>
+                </div>
+                <table className="table">
+                    <thead>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col">品名</th>
+                            <th scope="col">數量/單位</th>
+                            <th scope="col">小計</th>
                         </tr>
-                    ))
-                }
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td className="text-end" colSpan="3">
-                        總計
-                    </td>
-                    <td className="text-end">{currency(cart.final_total)}</td>
-                </tr>
-            </tfoot>
-        </table>
-    </div>);
+                    </thead>
+                    <tbody>
+                        {
+                            cart?.carts?.map(cartItem => (
+                                <tr key={cartItem.id}>
+                                    <td>
+                                        <button type="button" className="btn btn-outline-danger btn-sm"
+                                            onClick={() => deletCart(cartItem.id)}>
+                                            刪除
+                                        </button>
+                                    </td>
+                                    <th scope="row">
+                                        {cartItem.product.title}
+                                    </th>
+                                    <td>
+                                        <div className="input-group input-group-sm mb-3">
+                                            <input type="number" className="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm"
+                                                defaultValue={cartItem.qty}
+                                                onChange={(e) => updateCart(cartItem.id, cartItem.product_id, Number(e.target.value))} />
+                                            <span className="input-group-text" id="inputGroup-sizing-sm">{cartItem.product.unit}</span>
+                                        </div>
+                                    </td>
+                                    <td className="text-end">
+                                        {currency(cartItem.final_total)}
+                                    </td>
+                                </tr>
+                            ))
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td className="text-end" colSpan="3">
+                                總計
+                            </td>
+                            <td className="text-end">{currency(cart.final_total)}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </>
+    );
 };
 
 export default Cart;

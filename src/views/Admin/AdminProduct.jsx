@@ -1,11 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import axios from "axios";
 import * as bootstrap from "bootstrap";
-import "./assets/style.css";
+import Pagination from "../../component/Pagination";
+import ProductModal from "../../component/ProductModal";
 
-import ProductModal from './component/ProductModal';
-import Pagination from './component/Pagination';
-import Login from './views/back/Login';
 
 
 
@@ -29,9 +27,7 @@ const INITIAL_TEMPLATE_DATA = {
 
 
 
-function App2() {
-  
-  const [isAuth, setIsAuth] = useState(false);
+function AdminProduct() {
   const [products, setProducts] = useState([]);
   const [templateProduct, setTemplateProduct] = useState(INITIAL_TEMPLATE_DATA);
   const [modalType, setModalType] = useState("")
@@ -45,8 +41,8 @@ function App2() {
       setPagination(res.data.pagination);
 
     } catch (err) {
-      console.log(err.response
-      )
+      console.log(err.response);
+      // dispatch(createAsyncMessage(err.response.data));
     }
 
   }
@@ -68,7 +64,6 @@ function App2() {
       try {
         const res = await axios.post(`${API_BASE}/api/user/check`)
         console.log(res.data)
-        setIsAuth(true);
         getProducts();
       } catch (error) {
         console.log(error.response)
@@ -93,8 +88,7 @@ function App2() {
 
   return (
     <>
-      {
-        !isAuth ? (<Login getProducts={getProducts} setIsAuth={setIsAuth} />) : <div className='container'>
+        <div className='container'>
           <div className="mt-2">
             <h2>產品列表</h2>
             <div className="text-end mt-4">
@@ -137,8 +131,6 @@ function App2() {
           </div>
         </div>
 
-      }
-
       <ProductModal modalType={modalType}
         templateProduct={templateProduct}
         getProducts={getProducts}
@@ -147,4 +139,4 @@ function App2() {
   )
 }
 
-export default App2
+export default AdminProduct

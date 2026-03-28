@@ -7,16 +7,16 @@ const API_PATH = import.meta.env.VITE_API_PATH;
 
 function Products() {
     const [productList, setProductList] = useState([]);
-    const navigate=useNavigate()
+    const navigate=useNavigate();
+    const [error,setError]=useState(null);
 
     useEffect(() => {
         const getProduct = async () => {
             try {
                 const res = await axios.get(`${API_BASE}/api/${API_PATH}/products`)
-                // console.log(res.data.products)
                 setProductList(res.data.products)
             } catch (error) {
-                console.log(error.response)
+                setError(error.message || "失敗");
             }
         }
         getProduct()
@@ -27,6 +27,8 @@ const handleSubmit=(id)=>{
 }
 
     return (
+        <>
+         {error && <p>{error}</p>}
         <div className="container">
             <div className="row">
                 {
@@ -51,6 +53,7 @@ const handleSubmit=(id)=>{
                 }
             </div>
         </div>
+        </>
     )
 }
 export default Products

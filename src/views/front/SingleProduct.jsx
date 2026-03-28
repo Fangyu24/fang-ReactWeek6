@@ -6,8 +6,9 @@ const API_BASE = import.meta.env.VITE_API_BASE;
 const API_PATH = import.meta.env.VITE_API_PATH;
 
 function SingleProduct() {
-const {id}=useParams()
-const [product,setProduct]=useState()
+const {id}=useParams();
+const [product,setProduct]=useState();
+const [error, setError]=useState(null);
 
 useEffect(()=>{
     const handleSubmit = async(id)=>{
@@ -16,7 +17,7 @@ useEffect(()=>{
             setProduct(response.data.product)
             
         } catch (error) {
-            console.log(error.message)
+            setError(error.message || "失敗");
         }
 
     }
@@ -33,13 +34,14 @@ const addCart= async(id,qty=1)=>{
         console.log(res.data)
         
     } catch (error) {
-        console.log(error.message)
+        setError(error.message || "失敗");
     }
 }
 
 
     return !product?<h2>查無產品</h2>
-    :(
+    :( <>
+        {error && <p>{error}</p>}
         <div className="container mt-3">
             <div className="card h-100"style={{width:"18rem"}}>
                 <img src={product.imageUrl} className="card-img-top" alt={product.title} />
@@ -54,6 +56,7 @@ const addCart= async(id,qty=1)=>{
                 </div>
             </div>
         </div>
+    </>
     )
 }
 export default SingleProduct
